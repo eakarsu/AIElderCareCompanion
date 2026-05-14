@@ -4,8 +4,13 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import FeaturePage from './pages/FeaturePage';
 import AIAssistant from './pages/AIAssistant';
+import MedicationInteractionAlert from './pages/MedicationInteractionAlert';
+import CaregiverChat from './pages/CaregiverChat';
+import HipaaAuditLog from './pages/HipaaAuditLog';
 import Navbar from './components/Navbar';
 import './styles/App.css';
+
+import Batch03Features from './pages/Batch03Features';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -35,6 +40,7 @@ function App() {
         <Navbar user={user} onLogout={handleLogout} />
         <main className="main-content">
           <Routes>
+          <Route path="/batch03" element={<Batch03Features />} />
             <Route path="/" element={<Dashboard token={token} />} />
             <Route path="/medications" element={<FeaturePage feature="medications" title="Medication Management" token={token} />} />
             <Route path="/fall-alerts" element={<FeaturePage feature="fall-alerts" title="Fall Detection Alerts" token={token} />} />
@@ -68,6 +74,9 @@ function App() {
             <Route path="/housekeeping" element={<FeaturePage feature="housekeeping" title="Housekeeping" token={token} />} />
             <Route path="/medical-equipment" element={<FeaturePage feature="medical-equipment" title="Medical Equipment" token={token} />} />
             <Route path="/ai-assistant" element={<AIAssistant token={token} />} />
+            <Route path="/medication-interaction-alert" element={<MedicationInteractionAlert token={token} />} />
+            <Route path="/caregiver-chat" element={<CaregiverChat token={token} />} />
+            <Route path="/hipaa-audit-log" element={<HipaaAuditLog token={token} user={user} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

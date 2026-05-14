@@ -15,6 +15,10 @@ const aiFeatures = [
   { key: 'safety-evaluation', title: 'Home Safety Evaluation', icon: '\uD83C\uDFE0', desc: 'AI-powered safety assessment', color: '#D97706' },
   { key: 'care-plan', title: 'Care Plan Generator', icon: '\uD83D\uDCCB', desc: 'Comprehensive care plan creation', color: '#0F766E' },
   { key: 'chat', title: 'General AI Chat', icon: '\uD83E\uDD16', desc: 'Ask any elder care question', color: '#6D28D9' },
+  { key: 'hospitalization-risk', title: '30-Day Hospitalization Risk', icon: '🏥', desc: 'Estimate readmission risk from vitals, meds, incidents', color: '#B91C1C' },
+  { key: 'caregiver-burden', title: 'Caregiver Burden', icon: '🧡', desc: 'Zarit-style burden score from caregiver notes', color: '#7C3AED' },
+  { key: 'nutrition-optimize', title: 'Swallow-Safe Nutrition', icon: '🥣', desc: 'IDDSI-aligned meal plan for dysphagia', color: '#10B981' },
+  { key: 'medication-cost-optimizer', title: 'Medication Cost Optimizer', icon: '💸', desc: 'Generic alternatives + assistance programs', color: '#0EA5E9' },
 ];
 
 const defaultPrompts = {
@@ -29,6 +33,10 @@ const defaultPrompts = {
   'safety-evaluation': { home_data: { rooms: ['bathroom', 'bedroom', 'kitchen', 'stairs'], known_hazards: ['wet bathroom floor', 'uneven stairs'] }, patient_mobility: { uses_walker: false, balance_issues: true, vision_impaired: false } },
   'care-plan': { patient_profile: { name: 'Harold Martinez', age: 79, conditions: ['dementia', 'diabetes', 'neuropathy'] }, conditions: ['vascular dementia', 'type 2 diabetes'], goals: ['maintain cognitive function', 'manage blood sugar', 'prevent falls'] },
   'chat': { message: '' },
+  'hospitalization-risk': { patient_id: 'Eleanor Williams' },
+  'caregiver-burden': { patient_id: 'Eleanor Williams' },
+  'nutrition-optimize': { patient_id: 'Eleanor Williams', dysphagia_level: 'Level 5 - Minced & Moist', preferences: ['low sodium'], target_calories: 1800 },
+  'medication-cost-optimizer': { patient_id: 'Eleanor Williams', insurance_plan: 'Medicare Part D', monthly_budget: 150 },
 };
 
 const formatAIResponse = (text) => {

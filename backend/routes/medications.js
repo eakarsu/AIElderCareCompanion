@@ -5,8 +5,22 @@ const auth = require('../middleware/auth');
 
 router.get('/', auth, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM medications ORDER BY created_at DESC');
-    res.json(result.rows);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const offset = (page - 1) * limit;
+
+    const countResult = await pool.query('SELECT COUNT(*) FROM medications');
+    const total = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(total / limit);
+
+    const result = await pool.query(
+      'SELECT * FROM medications ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+      [limit, offset]
+    );
+    res.json({
+      data: result.rows,
+      pagination: { page, limit, total, totalPages }
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -20,11 +34,26 @@ router.get('/:id', auth, async (req, res) => {
 
 router.post('/', auth, async (req, res) => {
   try {
-    const { patient_name, medication_name, dosage, frequency, time_of_day, prescribing_doctor, start_date, end_date, notes, status } = req.body;
+    const { patient_id, patient_name, medication_name, dose, dosage, frequency, time_of_day, prescribing_doctor, start_date, end_date, notes, status } = req.body;
+
+    // Input validation: require patient_id (or patient_name), medication_name, dose/dosage, frequency
+    const missingFields = [];
+    if (!patient_id && !patient_name) missingFields.push('patient_id');
+    if (!medication_name) missingFields.push('medication_name');
+    if (!dose && !dosage) missingFields.push('dose');
+    if (!frequency) missingFields.push('frequency');
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
+    }
+
+    const effectiveDosage = dose || dosage;
+    const effectivePatientName = patient_name || String(patient_id);
+
     const result = await pool.query(
       `INSERT INTO medications (patient_name, medication_name, dosage, frequency, time_of_day, prescribing_doctor, start_date, end_date, notes, status)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
-      [patient_name, medication_name, dosage, frequency, time_of_day, prescribing_doctor, start_date, end_date, notes, status || 'active']
+      [effectivePatientName, medication_name, effectiveDosage, frequency, time_of_day, prescribing_doctor, start_date, end_date, notes, status || 'active']
     );
     res.status(201).json(result.rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }

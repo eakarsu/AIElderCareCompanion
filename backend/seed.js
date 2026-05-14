@@ -518,6 +518,22 @@ async function seed() {
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
+
+      -- AI results persistence (JSONB) for caching/auditing AI calls
+      CREATE TABLE IF NOT EXISTS ai_results (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        endpoint VARCHAR(100) NOT NULL,
+        entity_type VARCHAR(100),
+        entity_id VARCHAR(100),
+        request_payload JSONB,
+        ai_results JSONB,
+        model VARCHAR(200),
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_ai_results_endpoint ON ai_results(endpoint);
+      CREATE INDEX IF NOT EXISTS idx_ai_results_entity ON ai_results(entity_type, entity_id);
+      CREATE INDEX IF NOT EXISTS idx_ai_results_user ON ai_results(user_id);
     `);
 
     console.log('Tables created successfully');
