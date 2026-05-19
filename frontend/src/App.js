@@ -11,6 +11,7 @@ import Navbar from './components/Navbar';
 import './styles/App.css';
 
 import Batch03Features from './pages/Batch03Features';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -77,6 +78,7 @@ function App() {
             <Route path="/medication-interaction-alert" element={<MedicationInteractionAlert token={token} />} />
             <Route path="/caregiver-chat" element={<CaregiverChat token={token} />} />
             <Route path="/hipaa-audit-log" element={<HipaaAuditLog token={token} user={user} />} />
+            <Route path="/custom-views" element={<CustomViewsPage token={token} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

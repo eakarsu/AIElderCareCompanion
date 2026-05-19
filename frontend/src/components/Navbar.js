@@ -24,6 +24,7 @@ const Navbar = ({ user, onLogout }) => {
         {user && ['admin', 'nurse'].includes(user.role) && (
           <Link to="/hipaa-audit-log" className={location.pathname === '/hipaa-audit-log' ? 'active' : ''} onClick={() => setMenuOpen(false)}>Audit Log</Link>
         )}
+        <Link to="/custom-views" className={location.pathname === '/custom-views' ? 'active' : ''} onClick={() => setMenuOpen(false)}>Care Views</Link>
         <div className="navbar-user">
           <span className="user-info">{user?.name} ({user?.role})</span>
           <button onClick={onLogout} className="logout-btn">Logout</button>

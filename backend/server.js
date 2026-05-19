@@ -76,6 +76,9 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Mount custom views BEFORE 404/listen
+app.use('/api/custom-views', require('./routes/customViews'));
+
 
 // === Batch 03 Gaps & Frontend Mounts ===
 try {
