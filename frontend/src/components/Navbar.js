@@ -20,6 +20,7 @@ const Navbar = ({ user, onLogout }) => {
         <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={() => setMenuOpen(false)}>Dashboard</Link>
         <Link to="/ai-assistant" className={location.pathname === '/ai-assistant' ? 'active' : ''} onClick={() => setMenuOpen(false)}>AI Assistant</Link>
         <Link to="/medication-interaction-alert" className={location.pathname === '/medication-interaction-alert' ? 'active' : ''} onClick={() => setMenuOpen(false)}>Med Interactions</Link>
+        <Link to="/wandering-risk" className={location.pathname === '/wandering-risk' ? 'active' : ''} onClick={() => setMenuOpen(false)}>Wandering Risk</Link>
         <Link to="/caregiver-chat" className={location.pathname === '/caregiver-chat' ? 'active' : ''} onClick={() => setMenuOpen(false)}>Care Chat</Link>
         {user && ['admin', 'nurse'].includes(user.role) && (
           <Link to="/hipaa-audit-log" className={location.pathname === '/hipaa-audit-log' ? 'active' : ''} onClick={() => setMenuOpen(false)}>Audit Log</Link>

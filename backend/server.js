@@ -71,6 +71,7 @@ app.use('/api/family-video', require('./routes/familyVideoMessages'));
 app.use('/api/pet-care', require('./routes/petCare'));
 app.use('/api/advance-directive', require('./routes/advanceDirectiveChat'));
 app.use('/api/nursing-home-transition', require('./routes/nursingHomeTransition'));
+app.use('/api/wandering-risk', require('./routes/wanderingRisk'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

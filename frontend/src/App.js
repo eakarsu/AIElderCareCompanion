@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import FeaturePage from './pages/FeaturePage';
 import AIAssistant from './pages/AIAssistant';
 import MedicationInteractionAlert from './pages/MedicationInteractionAlert';
+import WanderingRisk from './pages/WanderingRisk';
 import CaregiverChat from './pages/CaregiverChat';
 import HipaaAuditLog from './pages/HipaaAuditLog';
 import Navbar from './components/Navbar';
@@ -12,6 +13,11 @@ import './styles/App.css';
 
 import Batch03Features from './pages/Batch03Features';
 import CustomViewsPage from './pages/CustomViewsPage';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+import TimelineView from './pages/TimelineView';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -41,6 +47,10 @@ function App() {
         <Navbar user={user} onLogout={handleLogout} />
         <main className="main-content">
           <Routes>
+        <Route path="/insights/timeline" element={<TimelineView />} />
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
           <Route path="/batch03" element={<Batch03Features />} />
             <Route path="/" element={<Dashboard token={token} />} />
             <Route path="/medications" element={<FeaturePage feature="medications" title="Medication Management" token={token} />} />
@@ -76,6 +86,7 @@ function App() {
             <Route path="/medical-equipment" element={<FeaturePage feature="medical-equipment" title="Medical Equipment" token={token} />} />
             <Route path="/ai-assistant" element={<AIAssistant token={token} />} />
             <Route path="/medication-interaction-alert" element={<MedicationInteractionAlert token={token} />} />
+            <Route path="/wandering-risk" element={<WanderingRisk token={token} />} />
             <Route path="/caregiver-chat" element={<CaregiverChat token={token} />} />
             <Route path="/hipaa-audit-log" element={<HipaaAuditLog token={token} user={user} />} />
             <Route path="/custom-views" element={<CustomViewsPage token={token} />} />
