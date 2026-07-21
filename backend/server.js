@@ -25,6 +25,13 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+app.use('/api', (req, res, next) => {
+  const governed = ['/auth', '/health', '/care-operations'].some((prefix) => req.path === prefix || req.path.startsWith(`${prefix}/`));
+  const legacyEnabled = process.env.NODE_ENV !== 'production' && process.env.ENABLE_LEGACY_PROTOTYPE_ROUTES === 'true';
+  if (governed || legacyEnabled) return next();
+  return res.status(404).json({ error: 'Legacy prototype route is quarantined' });
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/auth', require('./routes/passwordReset'));
@@ -72,6 +79,7 @@ app.use('/api/pet-care', require('./routes/petCare'));
 app.use('/api/advance-directive', require('./routes/advanceDirectiveChat'));
 app.use('/api/nursing-home-transition', require('./routes/nursingHomeTransition'));
 app.use('/api/wandering-risk', require('./routes/wanderingRisk'));
+app.use('/api/care-operations', require('./routes/careOperations'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -80,13 +88,6 @@ app.get('/api/health', (req, res) => {
 // Mount custom views BEFORE 404/listen
 app.use('/api/custom-views', require('./routes/customViews'));
 
-
-// === Batch 03 Gaps & Frontend Mounts ===
-try {
-  const _batch03 = require('./routes/batch03Gaps');
-  if (typeof authenticateToken === 'function') app.use('/api', authenticateToken, _batch03);
-  else app.use('/api', _batch03);
-} catch (_e) { /* batch03 gap routes optional */ }
 
 app.listen(PORT, () => {
   console.log(`Elder Care Backend running on port ${PORT}`);

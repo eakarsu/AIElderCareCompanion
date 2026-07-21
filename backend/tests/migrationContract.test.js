@@ -1,0 +1,2 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
+test('care migration includes consented clients, assignments, plans, incidents, dispatch, and audit',()=>{const sql=fs.readFileSync(path.join(__dirname,'../migrations/001_governed_care.sql'),'utf8');for(const term of ['care_clients','care_client_assignments','governed_care_plans','governed_care_incidents','care_dispatch_outbox','care_audit_events'])assert.ok(sql.includes(term),term);});

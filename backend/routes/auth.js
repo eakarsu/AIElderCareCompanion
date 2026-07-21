@@ -6,14 +6,7 @@ const pool = require('../db');
 
 function getJwtSecret() {
   const s = process.env.JWT_SECRET;
-  if (!s) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('JWT_SECRET environment variable must be set in production');
-    }
-    // Dev-only fallback — log warning loudly so it never silently happens in prod
-    console.warn('[SECURITY] JWT_SECRET not set — using insecure dev fallback. Do NOT use in production.');
-    return 'eldercare-dev-only-secret-do-not-use-in-prod';
-  }
+  if (!s || s.length < 32 || s.startsWith('replace-')) throw new Error('JWT_SECRET must contain at least 32 non-placeholder characters');
   return s;
 }
 
@@ -33,11 +26,11 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name, role: user.role },
+      { id: user.id, email: user.email, name: user.name, role: user.role, tenant_id: user.tenant_id },
       getJwtSecret(),
       { expiresIn: '24h' }
     );
-    res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role, tenant_id: user.tenant_id } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -45,24 +38,27 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'name, email, and password are required' });
+    if (process.env.ALLOW_SELF_REGISTRATION !== 'true' || process.env.NODE_ENV === 'production') {
+      return res.status(403).json({ error: 'Self-registration is disabled; use an administrator-issued invitation' });
+    }
+    const { name, email, password, organization_id } = req.body;
+    if (!name || !email || !password || !organization_id) {
+      return res.status(400).json({ error: 'name, email, password and organization_id are required' });
     }
     if (password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
-    const allowedRoles = ['admin', 'nurse', 'caregiver', 'family'];
-    const userRole = allowedRoles.includes(role) ? role : 'caregiver';
+    // Privileged clinical/caregiver roles must be provisioned by an administrator.
+    const userRole = 'family';
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role',
-      [name, email, hashedPassword, userRole]
+      'INSERT INTO users (name, email, password_hash, role, tenant_id) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role, tenant_id',
+      [name, email, hashedPassword, userRole, organization_id]
     );
     const user = result.rows[0];
     const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name, role: user.role },
+      { id: user.id, email: user.email, name: user.name, role: user.role, tenant_id: user.tenant_id },
       getJwtSecret(),
       { expiresIn: '24h' }
     );
@@ -72,15 +68,11 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.get('/me', require('../middleware/auth'), async (req, res) => {
-  try {
-    const userId = req.user?.id || req.user?.userId;
-    const r = await pool.query('SELECT id, name, email, role FROM users WHERE id = $1', [userId]);
-    if (r.rows.length === 0) return res.status(404).json({ error: 'User not found' });
-    res.json(r.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+router.get('/me', require('../middleware/auth'), (req, res) => {
+  // The login token already contains the non-sensitive identity and tenant
+  // claims. Returning those signed claims keeps this endpoint available even
+  // while additive profile columns are being migrated.
+  res.json({ user: req.user });
 });
 
 module.exports = router;

@@ -3,12 +3,7 @@ require('dotenv').config({ path: '../../.env' });
 
 function getJwtSecret() {
   const s = process.env.JWT_SECRET;
-  if (!s) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('JWT_SECRET environment variable must be set in production');
-    }
-    return 'eldercare-dev-only-secret-do-not-use-in-prod';
-  }
+  if (!s || s.length < 32 || s.startsWith('replace-')) throw new Error('JWT_SECRET must contain at least 32 non-placeholder characters');
   return s;
 }
 
