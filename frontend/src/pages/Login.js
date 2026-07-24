@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const demoPassword = process.env.REACT_APP_ENABLE_DEMO_CREDENTIAL_AUTOFILL === 'true'
+  ? process.env.REACT_APP_DEMO_PASSWORD || ''
+  : '';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -30,9 +33,9 @@ const Login = ({ onLogin }) => {
 
   const fillCredentials = (role) => {
     const creds = {
-      admin: { email: 'admin@eldercare.com', password: 'password123' },
-      nurse: { email: 'nurse@eldercare.com', password: 'password123' },
-      caregiver: { email: 'caregiver@eldercare.com', password: 'password123' },
+      admin: { email: 'admin@eldercare.com', password: demoPassword },
+      nurse: { email: 'nurse@eldercare.com', password: demoPassword },
+      caregiver: { email: 'caregiver@eldercare.com', password: demoPassword },
     };
     setEmail(creds[role].email);
     setPassword(creds[role].password);
@@ -80,13 +83,13 @@ const Login = ({ onLogin }) => {
         <div className="quick-login">
           <p>Quick Login:</p>
           <div className="quick-login-buttons">
-            <button onClick={() => fillCredentials('admin')} className="quick-btn admin">
+            <button disabled={!demoPassword} onClick={() => fillCredentials('admin')} className="quick-btn admin">
               Admin
             </button>
-            <button onClick={() => fillCredentials('nurse')} className="quick-btn nurse">
+            <button disabled={!demoPassword} onClick={() => fillCredentials('nurse')} className="quick-btn nurse">
               Nurse
             </button>
-            <button onClick={() => fillCredentials('caregiver')} className="quick-btn caregiver">
+            <button disabled={!demoPassword} onClick={() => fillCredentials('caregiver')} className="quick-btn caregiver">
               Caregiver
             </button>
           </div>

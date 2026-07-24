@@ -2,6 +2,12 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 require('dotenv').config({ path: '../.env' });
 
+function requireDemoPassword() {
+  const password = process.env.DEMO_PASSWORD;
+  if (!password || password.length < 12) throw new Error('DEMO_PASSWORD must be at least 12 characters');
+  return password;
+}
+
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 5432,
@@ -539,7 +545,7 @@ async function seed() {
     console.log('Tables created successfully');
 
     // Seed Users
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash(requireDemoPassword(), 10);
     await client.query(`
       INSERT INTO users (name, email, password_hash, role) VALUES
       ('Dr. Sarah Johnson', 'admin@eldercare.com', '${hashedPassword}', 'admin'),
@@ -1095,10 +1101,7 @@ async function seed() {
     console.log('Medical equipment seeded');
 
     console.log('\n✅ All data seeded successfully!');
-    console.log('Login credentials:');
-    console.log('  Admin: admin@eldercare.com / password123');
-    console.log('  Nurse: nurse@eldercare.com / password123');
-    console.log('  Caregiver: caregiver@eldercare.com / password123');
+    console.log('Demo login users provisioned: admin, nurse, caregiver.');
 
   } catch (err) {
     console.error('Seed error:', err.message);
