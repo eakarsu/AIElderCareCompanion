@@ -84,7 +84,7 @@ const Login = ({ onLogin }) => {
           <p>Quick Login:</p>
           <div className="quick-login-buttons">
             <button disabled={!demoPassword} onClick={() => fillCredentials('admin')} className="quick-btn admin">
-              Admin
+              Auto Fill Demo Credentials
             </button>
             <button disabled={!demoPassword} onClick={() => fillCredentials('nurse')} className="quick-btn nurse">
               Nurse
