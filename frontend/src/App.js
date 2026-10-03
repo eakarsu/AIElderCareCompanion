@@ -9,6 +9,7 @@ import WanderingRisk from './pages/WanderingRisk';
 import CaregiverChat from './pages/CaregiverChat';
 import HipaaAuditLog from './pages/HipaaAuditLog';
 import Navbar from './components/Navbar';
+import AppSidebar from './components/AppSidebar';
 import './styles/App.css';
 
 import Batch03Features from './pages/Batch03Features';
@@ -43,7 +44,8 @@ function App() {
 
   return (
     <Router>
-      <div className="app">
+      <div className="app codex-nav-shell">
+        <AppSidebar />
         <Navbar user={user} onLogout={handleLogout} />
         <main className="main-content">
           <Routes>
