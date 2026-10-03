@@ -9,7 +9,6 @@ import WanderingRisk from './pages/WanderingRisk';
 import CaregiverChat from './pages/CaregiverChat';
 import HipaaAuditLog from './pages/HipaaAuditLog';
 import Navbar from './components/Navbar';
-import Sidebar from './components/Sidebar';
 import './styles/App.css';
 
 import Batch03Features from './pages/Batch03Features';
@@ -44,8 +43,8 @@ function App() {
 
   return (
     <Router>
-      <div className="app-shell">
-        <Sidebar user={user} onLogout={handleLogout} />
+      <div className="app">
+        <Navbar user={user} onLogout={handleLogout} />
         <main className="main-content">
           <Routes>
         <Route path="/insights/timeline" element={<TimelineView />} />
