@@ -83,8 +83,8 @@ const Login = ({ onLogin }) => {
         <div className="quick-login">
           <p>Quick Login:</p>
           <div className="quick-login-buttons">
-            <button disabled={!demoPassword} onClick={() => fillCredentials('admin')} className="quick-btn admin">
-              Auto Fill Demo Credentials
+            <button disabled={!demoPassword} onClick={async (event) => { await (() => fillCredentials('admin'))(event); window.setTimeout(() => { const form = document.querySelector("form"); if (form) form.requestSubmit(); }, 150); }} className="quick-btn admin">
+              Log In as Demo
             </button>
             <button disabled={!demoPassword} onClick={() => fillCredentials('nurse')} className="quick-btn nurse">
               Nurse

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import JsonReport from '../components/JsonReport';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
@@ -37,58 +38,6 @@ const defaultPrompts = {
   'caregiver-burden': { patient_id: 'Eleanor Williams' },
   'nutrition-optimize': { patient_id: 'Eleanor Williams', dysphagia_level: 'Level 5 - Minced & Moist', preferences: ['low sodium'], target_calories: 1800 },
   'medication-cost-optimizer': { patient_id: 'Eleanor Williams', insurance_plan: 'Medicare Part D', monthly_budget: 150 },
-};
-
-const formatAIResponse = (text) => {
-  if (!text) return null;
-  const lines = text.split('\n');
-  const elements = [];
-  let currentList = [];
-  let listType = null;
-
-  const flushList = () => {
-    if (currentList.length > 0) {
-      elements.push(
-        <ul key={`list-${elements.length}`} className="ai-list">
-          {currentList.map((item, i) => (
-            <li key={i} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-          ))}
-        </ul>
-      );
-      currentList = [];
-    }
-  };
-
-  lines.forEach((line, idx) => {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      flushList();
-      return;
-    }
-    if (trimmed.startsWith('### ')) {
-      flushList();
-      elements.push(<h4 key={idx} className="ai-h4">{trimmed.slice(4)}</h4>);
-    } else if (trimmed.startsWith('## ')) {
-      flushList();
-      elements.push(<h3 key={idx} className="ai-h3">{trimmed.slice(3)}</h3>);
-    } else if (trimmed.startsWith('# ')) {
-      flushList();
-      elements.push(<h2 key={idx} className="ai-h2">{trimmed.slice(2)}</h2>);
-    } else if (trimmed.match(/^\d+\.\s/) || trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-      const content = trimmed.replace(/^(\d+\.\s|-\s|\*\s)/, '');
-      currentList.push(content);
-    } else if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
-      flushList();
-      elements.push(<p key={idx} className="ai-bold"><strong>{trimmed.slice(2, -2)}</strong></p>);
-    } else {
-      flushList();
-      elements.push(
-        <p key={idx} className="ai-text" dangerouslySetInnerHTML={{ __html: trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-      );
-    }
-  });
-  flushList();
-  return elements;
 };
 
 const AIAssistant = ({ token }) => {
@@ -132,13 +81,6 @@ const AIAssistant = ({ token }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const getResponseContent = () => {
-    if (!response) return null;
-    return response.analysis || response.assessment || response.summary ||
-           response.recommendations || response.plan || response.exercises ||
-           response.insights || response.evaluation || response.response;
   };
 
   return (
@@ -211,20 +153,12 @@ const AIAssistant = ({ token }) => {
 
           {response && (
             <div className="ai-response">
-              <div className="ai-response-header">
-                <h3>AI Response</h3>
-                {response.model && (
-                  <span className="ai-model-badge">Model: {response.model}</span>
-                )}
-                {response.usage && (
-                  <span className="ai-usage-badge">
-                    Tokens: {response.usage.prompt_tokens + response.usage.completion_tokens}
-                  </span>
-                )}
-              </div>
-              <div className="ai-response-body">
-                {formatAIResponse(getResponseContent())}
-              </div>
+              <JsonReport
+                data={response}
+                title="AI response"
+                model={response.model}
+                tokens={response.usage}
+              />
             </div>
           )}
         </div>
