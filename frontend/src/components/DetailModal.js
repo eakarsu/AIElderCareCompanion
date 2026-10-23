@@ -5,7 +5,7 @@ const DetailModal = ({ item, labels, onClose, onEdit, onDelete, formatValue, get
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content detail-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content detail-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Record Details</h2>
           <button className="modal-close" onClick={onClose}>&times;</button>
@@ -35,7 +35,7 @@ const DetailModal = ({ item, labels, onClose, onEdit, onDelete, formatValue, get
         <div className="modal-footer">
           <button className="btn-edit" onClick={onEdit}>Edit</button>
           <button className="btn-delete" onClick={onDelete}>Delete</button>
-          <button className="btn-close" onClick={onClose}>Close</button>
+          <button className="btn-close" onClick={onClose}>Cancel</button>
         </div>
       </div>
     </div>

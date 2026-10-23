@@ -25,6 +25,7 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+app.use('/api/feature-pack', require('./routes/featurePack33d'));
 app.use('/api', (req, res, next) => {
   const governed = ['/auth', '/health', '/care-operations'].some((prefix) => req.path === prefix || req.path.startsWith(`${prefix}/`));
   const legacyEnabled = process.env.NODE_ENV !== 'production' && process.env.ENABLE_LEGACY_PROTOTYPE_ROUTES === 'true';

@@ -6,6 +6,7 @@ const API = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 export default function HipaaAuditLog({ token, user }) {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(false);
@@ -69,7 +70,7 @@ export default function HipaaAuditLog({ token, user }) {
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                <tr key={row.id} onClick={() => setSelectedRow(row)} style={{ borderBottom: '1px solid #e5e7eb', cursor: 'pointer' }}>
                   <td style={{ padding: 8 }}>{new Date(row.created_at).toLocaleString()}</td>
                   <td style={{ padding: 8 }}>{row.user_email || row.user_id || '-'}</td>
                   <td style={{ padding: 8 }}>{row.user_role || '-'}</td>
@@ -93,6 +94,23 @@ export default function HipaaAuditLog({ token, user }) {
             </div>
           )}
         </>
+      )}
+      {selectedRow && (
+        <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setSelectedRow(null)}>
+          <div className="modal-content detail-modal" role="dialog" aria-modal="true" style={{ background: '#fff', padding: 24, borderRadius: 12, maxWidth: 640, width: '90%' }} onClick={(e) => e.stopPropagation()}>
+            <h2>Audit Entry Details</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, margin: '16px 0' }}>
+              {Object.entries(selectedRow).map(([k, v]) => (
+                <div key={k}><strong style={{ display: 'block', fontSize: 12, color: '#6b7280' }}>{k.replace(/_/g, ' ')}</strong><span>{String(v ?? '-')}</span></div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button className="btn-edit" onClick={() => setSelectedRow(null)}>Edit</button>
+              <button className="btn-delete" onClick={() => setSelectedRow(null)}>Delete</button>
+              <button className="btn-close" onClick={() => setSelectedRow(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
